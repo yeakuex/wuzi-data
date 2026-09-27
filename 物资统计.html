@@ -5,36 +5,307 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>物资统计</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;padding:15px;background:#0f0f1a;color:#fff;font-family:sans-serif;min-height:100vh}
-.title{font-size:24px;text-align:center;color:#00bfff;margin-bottom:5px}
-.subtitle{text-align:center;color:#666;font-size:12px;margin-bottom:20px}
-.setting{display:flex;gap:10px;justify-content:center;margin-bottom:15px;flex-wrap:wrap}
-.setting input{width:100px;padding:10px;font-size:16px;border-radius:8px;border:1px solid #444;background:#1e1e3e;color:#fff;text-align:center}
-.setting button{padding:10px 20px;font-size:16px;border-radius:8px;border:none;background:#00bfff;color:#fff}
-.pwd-box{background:#1e1e3e;border-radius:12px;padding:15px;margin-bottom:15px}
-.pwd-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.pwd-row input{flex:1;padding:10px;font-size:16px;border-radius:8px;border:1px solid #444;background:#0f0f1a;color:#fff}
-.pwd-row input.id-input{max-width:100px;text-align:center}
-.query-btn{width:100%;padding:15px;font-size:18px;border-radius:12px;border:none;background:#00bfff;color:#fff;margin-bottom:20px}
-.device{margin-bottom:30px;border-bottom:1px solid #333;padding-bottom:20px}
-.device-title{font-size:18px;color:#00bfff;margin-bottom:10px;text-align:center}
-.countdown{text-align:center;color:#ffcc00;font-size:14px;margin-bottom:10px}
-.off{text-align:center;color:#666;font-size:14px;padding:20px}
-.item{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,#1e1e3e,#2a2a4e);border-radius:12px;padding:15px;margin-bottom:10px;border-left:4px solid #00bfff}
-.item .left{display:flex;align-items:center;font-size:16px}
-.item .icon{font-size:22px;margin-right:10px}
-.item .count{font-size:22px;font-weight:bold;color:#00bfff}
-.status{text-align:center;color:#555;font-size:12px;margin-top:15px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+    padding:20px 15px;
+    background:
+        radial-gradient(ellipse at top, #0d1a2e 0%, #050810 100%);
+    color:#a0e0ff;
+    font-family:'Segoe UI','Microsoft YaHei',sans-serif;
+    min-height:100vh;
+    position:relative;
+}
+
+/* 顶部数据流线 */
+body::before{
+    content:'';
+    position:fixed;
+    top:0;left:0;right:0;
+    height:3px;
+    background:linear-gradient(90deg,
+        transparent 0%,
+        #00d4ff 20%,
+        #ff6b00 50%,
+        #00d4ff 80%,
+        transparent 100%);
+    box-shadow:0 0 20px #00d4ff, 0 0 40px rgba(255,107,0,0.5);
+    animation:flow 3s linear infinite;
+    background-size:200% 100%;
+    z-index:10;
+}
+@keyframes flow{
+    0%{background-position:200% 0}
+    100%{background-position:-200% 0}
+}
+
+/* 四角边框 */
+body::after{
+    content:'';
+    position:fixed;
+    top:10px;left:10px;right:10px;bottom:10px;
+    border:1px solid rgba(0,212,255,0.15);
+    border-radius:3px;
+    pointer-events:none;
+    z-index:1;
+}
+
+.title{
+    font-size:26px;
+    text-align:center;
+    color:#00d4ff;
+    letter-spacing:6px;
+    font-weight:300;
+    text-shadow:0 0 15px rgba(0,212,255,0.8);
+    margin-bottom:4px;
+    position:relative;
+    z-index:2;
+    text-transform:uppercase;
+}
+.subtitle{
+    text-align:center;
+    color:#ff6b00;
+    font-size:10px;
+    letter-spacing:5px;
+    margin-bottom:25px;
+    text-transform:uppercase;
+    position:relative;
+    z-index:2;
+    text-shadow:0 0 8px rgba(255,107,0,0.6);
+}
+.subtitle::before{content:'▬▬ '}
+.subtitle::after{content:' ▬▬'}
+
+.setting{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-bottom:15px;
+    flex-wrap:wrap;
+    position:relative;
+    z-index:2;
+}
+.setting input{
+    width:90px;
+    padding:10px;
+    font-size:14px;
+    border-radius:3px;
+    border:1px solid rgba(0,212,255,0.4);
+    background:rgba(5,15,30,0.9);
+    color:#00d4ff;
+    text-align:center;
+    outline:none;
+    transition:0.3s;
+    font-family:inherit;
+}
+.setting input:focus{
+    border-color:#ff6b00;
+    box-shadow:0 0 15px rgba(255,107,0,0.5);
+    color:#ff6b00;
+}
+.setting button{
+    padding:10px 22px;
+    font-size:13px;
+    border-radius:3px;
+    border:1px solid #00d4ff;
+    background:rgba(0,212,255,0.1);
+    color:#00d4ff;
+    letter-spacing:3px;
+    cursor:pointer;
+    transition:0.3s;
+    font-family:inherit;
+    text-transform:uppercase;
+}
+.setting button:hover{
+    background:#00d4ff;
+    color:#050810;
+    box-shadow:0 0 25px #00d4ff;
+}
+
+.pwd-box{
+    background:rgba(5,15,30,0.7);
+    border:1px solid rgba(0,212,255,0.25);
+    border-radius:3px;
+    padding:15px;
+    margin-bottom:15px;
+    position:relative;
+    z-index:2;
+    clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.pwd-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+.pwd-row input{
+    flex:1;
+    padding:10px;
+    font-size:14px;
+    border-radius:3px;
+    border:1px solid rgba(0,212,255,0.3);
+    background:rgba(0,0,0,0.6);
+    color:#a0e0ff;
+    outline:none;
+    font-family:inherit;
+    transition:0.3s;
+}
+.pwd-row input.id-input{
+    max-width:80px;
+    text-align:center;
+    color:#ff6b00;
+    border-color:rgba(255,107,0,0.4);
+}
+.pwd-row input:focus{
+    border-color:#00d4ff;
+    box-shadow:0 0 12px rgba(0,212,255,0.5);
+}
+.pwd-row input.id-input:focus{
+    border-color:#ff6b00;
+    box-shadow:0 0 12px rgba(255,107,0,0.5);
+}
+
+.query-btn{
+    width:100%;
+    padding:14px;
+    font-size:14px;
+    border-radius:3px;
+    border:2px solid #ff6b00;
+    background:rgba(255,107,0,0.1);
+    color:#ff6b00;
+    letter-spacing:6px;
+    cursor:pointer;
+    margin-bottom:25px;
+    transition:0.3s;
+    text-transform:uppercase;
+    font-family:inherit;
+    font-weight:bold;
+    position:relative;
+    z-index:2;
+}
+.query-btn:hover{
+    background:#ff6b00;
+    color:#050810;
+    box-shadow:0 0 30px rgba(255,107,0,0.8);
+}
+
+.device{
+    margin-bottom:25px;
+    padding:18px;
+    background:rgba(5,15,30,0.5);
+    border:1px solid rgba(0,212,255,0.2);
+    border-radius:3px;
+    position:relative;
+    z-index:2;
+    clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+.device::before{
+    content:'';
+    position:absolute;
+    top:0;right:0;
+    width:16px;height:16px;
+    background:linear-gradient(225deg, transparent 50%, #00d4ff 50%, #00d4ff 55%, transparent 55%);
+    opacity:0.6;
+}
+.device-title{
+    font-size:14px;
+    color:#00d4ff;
+    letter-spacing:3px;
+    margin-bottom:12px;
+    padding-bottom:8px;
+    border-bottom:1px dashed rgba(0,212,255,0.3);
+    text-transform:uppercase;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.device-title::before{content:'▣ ';color:#ff6b00}
+.device-title::after{content:' ONLINE';color:#00ff88;font-size:10px}
+.countdown{
+    text-align:center;
+    color:#ff6b00;
+    font-size:12px;
+    margin-bottom:12px;
+    letter-spacing:3px;
+    padding:6px;
+    background:rgba(255,107,0,0.08);
+    border-left:2px solid #ff6b00;
+    border-right:2px solid #ff6b00;
+}
+.off{
+    text-align:center;
+    color:#3a4a5a;
+    font-size:13px;
+    padding:30px;
+    letter-spacing:4px;
+}
+
+.item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(0,20,40,0.6);
+    border-radius:3px;
+    padding:12px 15px;
+    margin-bottom:6px;
+    border-left:3px solid #00d4ff;
+    transition:0.3s;
+    position:relative;
+    overflow:hidden;
+}
+.item::before{
+    content:'';
+    position:absolute;
+    top:0;left:-100%;
+    width:100%;height:100%;
+    background:linear-gradient(90deg, transparent, rgba(0,212,255,0.1), transparent);
+    transition:0.5s;
+}
+.item:hover::before{left:100%}
+.item:hover{
+    border-left-color:#ff6b00;
+    background:rgba(0,30,60,0.8);
+}
+.item .left{
+    display:flex;
+    align-items:center;
+    font-size:14px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+.item .icon{
+    font-size:20px;
+    margin-right:12px;
+}
+.item .count{
+    font-size:20px;
+    font-weight:bold;
+    color:#00d4ff;
+    letter-spacing:2px;
+    text-shadow:0 0 10px rgba(0,212,255,0.8);
+    font-variant-numeric:tabular-nums;
+}
+
+.status{
+    text-align:center;
+    color:#3a4a5a;
+    font-size:10px;
+    margin-top:20px;
+    letter-spacing:3px;
+    position:relative;
+    z-index:2;
+    text-transform:uppercase;
+}
+.status::before{content:'● ';color:#00ff88;animation:blink 1.5s infinite}
+@keyframes blink{50%{opacity:0.3}}
 </style>
 </head>
 <body>
-<div class="title">📊 物资统计</div>
-<div class="subtitle">星魔王牌战争脚本</div>
+<div class="title">物资统计</div>
+<div class="subtitle">Combat Data Terminal</div>
 
 <div class="setting">
-    <input type="number" id="设备数" value="1" min="1" max="10" placeholder="设备数量">
-    <button onclick="生成口令框()">确定</button>
+    <input type="number" id="设备数" value="1" min="1" max="10" placeholder="设备数">
+    <button onclick="生成口令框()">连接</button>
 </div>
 
 <div id="pwdArea"></div>
@@ -70,12 +341,12 @@ function 生成口令框(){
         var 保存标识 = localStorage.getItem('标识_' + i) || '';
         var 保存口令 = localStorage.getItem('口令_' + i) || '';
         html += '<div class="pwd-row">';
-        html += '<input type="text" class="id-input" id="标识_' + i + '" placeholder="标识" value="' + 保存标识 + '">';
-        html += '<input type="text" id="口令_' + i + '" placeholder="输入口令" value="' + 保存口令 + '">';
+        html += '<input type="text" class="id-input" id="标识_' + i + '" placeholder="ID" value="' + 保存标识 + '">';
+        html += '<input type="text" id="口令_' + i + '" placeholder="密码" value="' + 保存口令 + '">';
         html += '</div>';
     }
     html += '</div>';
-    html += '<button class="query-btn" onclick="查询()">🔍 查询</button>';
+    html += '<button class="query-btn" onclick="查询()">查询</button>';
     document.getElementById('pwdArea').innerHTML = html;
     document.getElementById('content').innerHTML = '';
     document.getElementById('status').textContent = '';
@@ -93,7 +364,7 @@ function 查询(){
             localStorage.setItem('口令_' + index, 口令);
             
             if(!标识 || !口令){
-                结果数组[index] = '<div class="device"><div class="device-title">📱 未填写</div><div class="off">标识或口令为空</div></div>';
+                结果数组[index] = '<div class="device"><div class="device-title">未填写</div><div class="off">[ 标识或口令为空 ]</div></div>';
                 完成数++;
                 if(完成数 === 当前设备数) 显示结果(结果数组);
                 return;
@@ -118,7 +389,6 @@ function 显示结果(结果数组){
 }
 
 function 读设备(标识, 输入口令, callback){
-    // 用 raw.githubusercontent.com，实时，不用清缓存
     var url = 'https://raw.githubusercontent.com/' + GITHUB_USER + '/' + GITHUB_REPO + '/main/wuzi_' + 标识 + '.json?t=' + Date.now();
     fetch(url)
         .then(function(r){
@@ -131,16 +401,16 @@ function 读设备(标识, 输入口令, callback){
 
 function 渲染设备(标识, data, 输入口令){
     var html = '<div class="device" id="device_' + 标识 + '">';
-    html += '<div class="device-title">📱 ' + 标识 + '</div>';
+    html += '<div class="device-title">' + 标识 + '</div>';
     
     if(!data){
-        html += '<div class="off">📭 没有数据</div>';
+        html += '<div class="off">[ 无数据 ]</div>';
     } else if(String(data.口令) !== String(输入口令)){
-        html += '<div class="off">🔒 口令不匹配</div>';
+        html += '<div class="off">[ 口令不匹配 ]</div>';
     } else if(!data.开启){
-        html += '<div class="off">⏸ 未开启统计</div>';
+        html += '<div class="off">[ 未开启 ]</div>';
     } else if(!data.心跳时间 || !data.有效期小时){
-        html += '<div class="off">⚠️ 数据格式过旧，请更新自动精灵</div>';
+        html += '<div class="off">[ 数据格式过旧 ]</div>';
     } else {
         html += 渲染内容(标识, data);
     }
@@ -154,7 +424,7 @@ function 渲染内容(标识, data){
     var html = '';
     
     if(剩余毫秒 <= 0){
-        html += '<div class="off">⏰ 数据已过期<br>请启动自动精灵重新同步</div>';
+        html += '<div class="off">[ 数据已过期 ]</div>';
         return html;
     }
     
@@ -162,7 +432,7 @@ function 渲染内容(标识, data){
     var 时 = Math.floor(剩余秒 / 3600);
     var 分 = Math.floor((剩余秒 % 3600) / 60);
     var 秒 = 剩余秒 % 60;
-    html += '<div class="countdown">⏱ 剩余：' + 时 + '时' + 分 + '分' + 秒 + '秒</div>';
+    html += '<div class="countdown">⏱ 剩余 ' + 时 + '时' + 分 + '分' + 秒 + '秒</div>';
     
     for(var i=0; i<物资配置.length; i++){
         var cfg = 物资配置[i];
@@ -186,19 +456,18 @@ function 启动倒计时(){
             var 剩余毫秒 = 缓存.data.心跳时间 + 缓存.data.有效期小时 * 3600 * 1000 - Date.now();
             var 旧 = el.querySelector('.countdown');
             if(剩余毫秒 <= 0){
-                el.innerHTML = '<div class="device-title">📱 ' + 缓存.标识 + '</div><div class="off">⏰ 数据已过期<br>请启动自动精灵重新同步</div>';
+                el.innerHTML = '<div class="device-title">' + 缓存.标识 + '</div><div class="off">[ 数据已过期 ]</div>';
             } else if(旧){
                 var 剩余秒 = Math.floor(剩余毫秒 / 1000);
                 var 时 = Math.floor(剩余秒 / 3600);
                 var 分 = Math.floor((剩余秒 % 3600) / 60);
                 var 秒 = 剩余秒 % 60;
-                旧.textContent = '⏱ 剩余：' + 时 + '时' + 分 + '分' + 秒 + '秒';
+                旧.textContent = '⏱ 剩余 ' + 时 + '时' + 分 + '分' + 秒 + '秒';
             }
         }
     }, 1000);
 }
 
-// 启动
 var 保存设备数 = localStorage.getItem('设备数') || 1;
 document.getElementById('设备数').value = 保存设备数;
 当前设备数 = parseInt(保存设备数);
