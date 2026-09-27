@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>物资统计</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:15px;background:#0f0f1a;color:#fff;font-family:sans-serif;min-height:100vh}
+.title{font-size:24px;text-align:center;color:#00bfff;margin-bottom:5px}
+.subtitle{text-align:center;color:#666;font-size:12px;margin-bottom:20px}
+.item{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,#1e1e3e,#2a2a4e);border-radius:12px;padding:15px;margin-bottom:10px;border-left:4px solid #00bfff}
+.item .left{display:flex;align-items:center;font-size:16px}
+.item .icon{font-size:22px;margin-right:10px}
+.item .count{font-size:22px;font-weight:bold;color:#00bfff}
+.status{text-align:center;color:#555;font-size:12px;margin-top:15px}
+</style>
+</head>
+<body>
+<div class="title">📊 物资统计</div>
+<div class="subtitle">星魔王牌战争脚本</div>
+<div id="list">加载中...</div>
+<div class="status" id="status">读取中...</div>
+
+<script>
+var API_URL = "https://api.github.com/repos/yeakuex/wuzi-data/contents/wuzi.json";
+
+var 物资配置 = [
+    {key: '木头',  icon: '🪵', color: '#8B4513'},
+    {key: '石头',  icon: '🪨', color: '#9e9b84'},
+    {key: '铁',    icon: '⛏️', color: '#787569'},
+    {key: '硫磺',  icon: '💎', color: '#a9991d'},
+    {key: '精铁',  icon: '🔩', color: '#44472d'},
+    {key: '布',    icon: '🧵', color: '#baa374'},
+    {key: '油',    icon: '🛢️', color: '#882a14'},
+    {key: '原油',  icon: '⛽', color: '#b45d37'}
+];
+
+function loadData() {
+    fetch(API_URL + "?t=" + Date.now())
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            var content = atob(res.content.replace(/\n/g, ''));
+            var data = JSON.parse(decodeURIComponent(escape(content)));
+            render(data);
+        })
+        .catch(function() {
+            document.getElementById('list').textContent = '读取失败';
+        });
+}
+
+function render(data) {
+    var html = '';
+    for (var i = 0; i < 物资配置.length; i++) {
+        var cfg = 物资配置[i];
+        var count = data[cfg.key] || 0;
+        html += '<div class="item" style="border-left-color:' + cfg.color + '">';
+        html += '<span class="left"><span class="icon">' + cfg.icon + '</span>';
+        html += '<span style="color:' + cfg.color + '">' + cfg.key + '</span></span>';
+        html += '<span class="count">' + count + '</span></div>';
+    }
+    document.getElementById('list').innerHTML = html;
+    document.getElementById('status').textContent = '更新于 ' + (data['更新时间'] || new Date().toLocaleString());
+}
+
+loadData();
+setInterval(loadData, 3000);
+</script>
+</body>
+</html>
