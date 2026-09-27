@@ -57,7 +57,7 @@ var 物资配置 = [
 ];
 
 var 当前设备数 = 1;
-var 设备数据缓存 = {};  // { index: { 标识, 口令, data, 过期时刻 } }
+var 设备数据缓存 = {};
 
 function 生成口令框(){
     当前设备数 = parseInt(document.getElementById('设备数').value) || 1;
@@ -117,8 +117,9 @@ function 显示结果(结果数组){
     document.getElementById('status').textContent = '更新于 ' + new Date().toLocaleString();
 }
 
-function 读设备(标识, 口令, callback){
-    var url = 'https://cdn.jsdelivr.net/gh/' + GITHUB_USER + '/' + GITHUB_REPO + '@main/wuzi_' + 标识 + '.json?t=' + Date.now();
+function 读设备(标识, 输入口令, callback){
+    // 用 raw.githubusercontent.com，实时，不用清缓存
+    var url = 'https://raw.githubusercontent.com/' + GITHUB_USER + '/' + GITHUB_REPO + '/main/wuzi_' + 标识 + '.json?t=' + Date.now();
     fetch(url)
         .then(function(r){
             if(!r.ok) throw new Error('not found');
@@ -157,14 +158,12 @@ function 渲染内容(标识, data){
         return html;
     }
     
-    // 倒计时
     var 剩余秒 = Math.floor(剩余毫秒 / 1000);
     var 时 = Math.floor(剩余秒 / 3600);
     var 分 = Math.floor((剩余秒 % 3600) / 60);
     var 秒 = 剩余秒 % 60;
     html += '<div class="countdown">⏱ 剩余：' + 时 + '时' + 分 + '分' + 秒 + '秒</div>';
     
-    // 物资
     for(var i=0; i<物资配置.length; i++){
         var cfg = 物资配置[i];
         var count = data[cfg.key] || 0;
@@ -176,7 +175,6 @@ function 渲染内容(标识, data){
     return html;
 }
 
-// ============ 每秒刷新倒计时 ============
 function 启动倒计时(){
     if(window._timer) clearInterval(window._timer);
     window._timer = setInterval(function(){
@@ -185,14 +183,11 @@ function 启动倒计时(){
             if(!缓存 || !缓存.data || !缓存.data.心跳时间) continue;
             var el = document.getElementById('device_' + 缓存.标识);
             if(!el) continue;
-            // 找到该设备的设备标题后，替换它下面的内容
             var 剩余毫秒 = 缓存.data.心跳时间 + 缓存.data.有效期小时 * 3600 * 1000 - Date.now();
             var 旧 = el.querySelector('.countdown');
             if(剩余毫秒 <= 0){
-                // 全部替换为过期提示
                 el.innerHTML = '<div class="device-title">📱 ' + 缓存.标识 + '</div><div class="off">⏰ 数据已过期<br>请启动自动精灵重新同步</div>';
             } else if(旧){
-                // 只更新倒计时
                 var 剩余秒 = Math.floor(剩余毫秒 / 1000);
                 var 时 = Math.floor(剩余秒 / 3600);
                 var 分 = Math.floor((剩余秒 % 3600) / 60);
